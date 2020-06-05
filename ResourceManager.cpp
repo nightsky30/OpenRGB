@@ -83,12 +83,22 @@ std::vector<i2c_smbus_interface*> & ResourceManager::GetI2CBusses()
     return busses;
 }
 
+void ResourceManager::RegisterFanController(FanController *fan_controller)
+{
+    fan_controllers.push_back(fan_controller);
+}
+
 void ResourceManager::RegisterRGBController(RGBController *rgb_controller)
 {
     LOG_NOTICE("Registering RGB controller: %s", rgb_controller->name.c_str());
     rgb_controllers_hw.push_back(rgb_controller);
 
     DeviceListChanged();
+}
+
+std::vector<FanController*> & ResourceManager::GetFanControllers()
+{
+    return fan_controllers;
 }
 
 std::vector<RGBController*> & ResourceManager::GetRGBControllers()

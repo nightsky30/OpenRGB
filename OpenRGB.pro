@@ -114,6 +114,7 @@ INCLUDEPATH +=                                                                  
     Controllers/ThermaltakeRiingController/                                                     \
     Controllers/YeelightController/                                                             \
     Controllers/ZalmanZSyncController/                                                          \
+    FanController/                                                                              \
     RGBController/                                                                              \
     qt/
 
@@ -142,6 +143,7 @@ HEADERS +=                                                                      
     pci_ids/pci_ids.h                                                                           \
     qt/DeviceView.h                                                                             \
     qt/OpenRGBDialog2.h                                                                         \
+    qt/OpenRGBFanPage.h                                                                         \
     qt/OpenRGBProfileSaveDialog.h                                                               \
     qt/OpenRGBServerInfoPage.h                                                                  \
     qt/OpenRGBSoftwareInfoPage.h                                                                \
@@ -332,12 +334,14 @@ HEADERS +=                                                                      
     Controllers/ThermaltakePoseidonZRGBController/RGBController_ThermaltakePoseidonZRGB.h       \
     Controllers/ThermaltakeRiingController/ThermaltakeRiingController.h                         \
     Controllers/ThermaltakeRiingController/ThermaltakeRiingQuadController.h                     \
+    Controllers/ThermaltakeRiingController/FanController_ThermaltakeRiing.h                     \
     Controllers/ThermaltakeRiingController/RGBController_ThermaltakeRiing.h                     \
     Controllers/ThermaltakeRiingController/RGBController_ThermaltakeRiingQuad.h                 \
     Controllers/YeelightController/YeelightController.h                                         \
     Controllers/YeelightController/RGBController_Yeelight.h                                     \
     Controllers/ZalmanZSyncController/ZalmanZSyncController.h                                   \
     Controllers/ZalmanZSyncController/RGBController_ZalmanZSync.h                               \
+    FanController/FanController.h                                                               \
     RGBController/RGBController.h                                                               \
     RGBController/RGBController_Dummy.h                                                         \
     RGBController/RGBController_Network.h                                                       \
@@ -365,6 +369,7 @@ SOURCES +=                                                                      
     net_port/net_port.cpp                                                                       \
     qt/DeviceView.cpp                                                                           \
     qt/OpenRGBDialog2.cpp                                                                       \
+    qt/OpenRGBFanPage.cpp                                                                       \
     qt/OpenRGBProfileSaveDialog.cpp                                                             \
     qt/OpenRGBServerInfoPage.cpp                                                                \
     qt/OpenRGBSoftwareInfoPage.cpp                                                              \
@@ -608,6 +613,7 @@ SOURCES +=                                                                      
     Controllers/ThermaltakeRiingController/ThermaltakeRiingController.cpp                       \
     Controllers/ThermaltakeRiingController/ThermaltakeRiingQuadController.cpp                   \
     Controllers/ThermaltakeRiingController/ThermaltakeRiingControllerDetect.cpp                 \
+    Controllers/ThermaltakeRiingController/FanController_ThermaltakeRiing.cpp                   \
     Controllers/ThermaltakeRiingController/RGBController_ThermaltakeRiing.cpp                   \
     Controllers/ThermaltakeRiingController/RGBController_ThermaltakeRiingQuad.cpp               \
     Controllers/YeelightController/YeelightController.cpp                                       \
@@ -629,6 +635,7 @@ FORMS +=                                                                        
     qt/OpenRGBDevicePage.ui                                                                     \
     qt/OpenRGBDialog.ui                                                                         \
     qt/OpenRGBDialog2.ui                                                                        \
+    qt/OpenRGBFanPage.ui                                                                        \
     qt/OpenRGBProfileSaveDialog.ui                                                              \
     qt/OpenRGBServerInfoPage.ui                                                                 \
     qt/OpenRGBSoftwareInfoPage.ui                                                               \
