@@ -20,6 +20,7 @@ enum
     LOGITECH_G203_MODE_STATIC            = 0x01,
     LOGITECH_G203_MODE_CYCLE             = 0x02,
     LOGITECH_G203_MODE_BREATHING         = 0x03,
+    LOGITECH_G203_MODE_DIRECT            = 0x04,
 };
 
 /*---------------------------------------------------------------------------------------------*\
@@ -36,13 +37,13 @@ enum
 class LogitechG203Controller
 {
 public:
-    LogitechG203Controller(hid_device* dev_handle, const char* path);
+    LogitechG203Controller(hid_device* dev_cmd_handle, hid_device* dev_handle, const char* path);
     ~LogitechG203Controller();
 
     std::string GetDeviceLocation();
     std::string GetSerialString();
 
-    void        SendMouseMode
+    void        UpdateMouseLED
                    (
                    unsigned char       mode,
                    unsigned short      speed,
@@ -51,7 +52,13 @@ public:
                    unsigned char       blue
                    );
 
+    void        SendMouseMode
+                   (
+                   unsigned char       mode
+                   );
+
 private:
     hid_device*             dev;
+    hid_device*             cmd_dev;
     std::string             location;
 };

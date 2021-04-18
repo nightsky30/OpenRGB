@@ -11,15 +11,17 @@
 
 #include <cstring>
 
-LogitechG203Controller::LogitechG203Controller(hid_device* dev_handle, const char* path)
+LogitechG203Controller::LogitechG203Controller(hid_device* dev_cmd_handle, hid_device* dev_handle, const char* path)
 {
     dev         = dev_handle;
+    cmd_dev     = dev_cmd_handle;
     location    = path;
 }
 
 LogitechG203Controller::~LogitechG203Controller()
 {
     hid_close(dev);
+    hid_close(cmd_dev);
 }
 
 std::string LogitechG203Controller::GetDeviceLocation()
@@ -42,7 +44,7 @@ std::string LogitechG203Controller::GetSerialString()
 | Private packet sending functions.                                                                 |
 \*-------------------------------------------------------------------------------------------------*/
 
-void LogitechG203Controller::SendMouseMode
+void LogitechG203Controller::UpdateMouseLED
     (
     unsigned char       mode,
     unsigned short      speed,
@@ -51,6 +53,7 @@ void LogitechG203Controller::SendMouseMode
     unsigned char       blue
     )
 {
+
     char usb_buf[20];
 
     /*-----------------------------------------------------*\
@@ -67,7 +70,7 @@ void LogitechG203Controller::SendMouseMode
     usb_buf[0x03]           = 0x3C;
     usb_buf[0x04]           = 0x00;
 
-    usb_buf[0x05]           = mode;
+    usb_buf[0x05]           = (mode == LOGITECH_G203_MODE_STATIC || mode == LOGITECH_G203_MODE_DIRECT) ? LOGITECH_G203_MODE_STATIC : mode;
 
     usb_buf[0x06]           = red;
     usb_buf[0x07]           = green;
@@ -92,4 +95,40 @@ void LogitechG203Controller::SendMouseMode
     \*-----------------------------------------------------*/
     hid_write(dev, (unsigned char *)usb_buf, 20);
     hid_read(dev, (unsigned char *)usb_buf, 20);
+}
+
+void LogitechG203Controller::SendMouseMode(unsigned char mode)
+{
+    if(mode == LOGITECH_G203_MODE_STATIC || mode == LOGITECH_G203_MODE_DIRECT)
+    {
+        char cmd_buf[7];
+        char usb_buf[20];
+        /*-----------------------------------------------------*\
+        | Zero out buffer                                       |
+        \*-----------------------------------------------------*/
+        memset(cmd_buf, 0x00, sizeof(cmd_buf));
+
+        /*-----------------------------------------------------*\
+        | Set up Command Control packet                         |
+        \*-----------------------------------------------------*/
+        cmd_buf[0x00]       = 0x10;
+        cmd_buf[0x01]       = 0xFF;
+        cmd_buf[0x02]       = 0x0E;
+        cmd_buf[0x03]       = 0x8A;
+        cmd_buf[0x04]       = 0x00;
+        cmd_buf[0x05]       = 0x00;
+        /*-----------------------------------------------------*\
+        | If direct, disable save to flash                      |
+        \*-----------------------------------------------------*/
+        if(mode == LOGITECH_G203_MODE_DIRECT)
+        {
+            cmd_buf[0x04]       = 0x01;
+            cmd_buf[0x05]       = 0x01;
+        }
+        /*-----------------------------------------------------*\
+        | Send packet                                           |
+        \*-----------------------------------------------------*/
+        hid_write(cmd_dev, (unsigned char *)cmd_buf, 7);
+        hid_read(dev, (unsigned char *)usb_buf, 20);
+    }
 }

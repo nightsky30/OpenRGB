@@ -135,14 +135,59 @@ void DetectLogitechKeyboardG213(hid_device_info* info, const std::string& name)
 
 void DetectLogitechMouseG203(hid_device_info* info, const std::string& name)
 {
+    /*-------------------------------------------------------------------------------------------------*\
+    | Logitech mice have two different usages, one for 20 byte data packets and one for 7 byte control  |
+    | Usage 0x02 for 20 byte, usage 0x01 for 7 byte, both are on usage page 0xFF00                      |
+    \*-------------------------------------------------------------------------------------------------*/
+#ifdef _WIN32
+     hid_device* dev_usage_0x0001 = nullptr;
+     hid_device* dev_usage_0x0002 = nullptr;
+     hid_device_info* info_temp = info;
+     while(info_temp)
+     {
+         if(info_temp->vendor_id        == info->vendor_id        // constant LOGITECH_VID
+         && info_temp->product_id       == info->product_id       // NON-constant
+         && info_temp->interface_number == info->interface_number // constant 1
+         && info_temp->usage_page       == info->usage_page)      // constant 0x00FF
+         {
+             if(info_temp->usage == 0x0001)
+             {
+                dev_usage_0x0001 = hid_open_path(info_temp->path);
+             }
+             else if(info_temp->usage == 0x0002)
+             {
+                 dev_usage_0x0002 = hid_open_path(info_temp->path);
+             }
+         }
+         if(dev_usage_0x0001 && dev_usage_0x0002)
+         {
+             break;
+         }
+         info_temp = info_temp->next;
+     }
+     if(dev_usage_0x0001 && dev_usage_0x0002)
+     {
+         LogitechG203Controller* controller = new LogitechG203Controller(dev_usage_0x0001, dev_usage_0x0002, info->path);
+         RGBController_LogitechG203* rgb_controller = new RGBController_LogitechG203(controller);
+         rgb_controller->name = name;
+         ResourceManager::get()->RegisterRGBController(rgb_controller);
+     }
+     else
+     {
+         // Not all of them could be opened, do some cleanup
+         hid_close(dev_usage_0x0001);
+         hid_close(dev_usage_0x0002);
+     }
+#else
     hid_device* dev = hid_open_path(info->path);
     if(dev)
     {
-        LogitechG203Controller* controller = new LogitechG203Controller(dev, info->path);
+        LogitechG203Controller* controller = new LogitechG203Controller(dev, dev, info->path);
         RGBController_LogitechG203* rgb_controller = new RGBController_LogitechG203(controller);
         rgb_controller->name = name;
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
+#endif
 }
 
 void DetectLogitechMouseG203L(hid_device_info* info, const std::string& name)
